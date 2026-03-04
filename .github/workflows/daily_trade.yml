@@ -1,0 +1,42 @@
+name: Daily Paper Trade
+
+on:
+  schedule:
+    # 3:55 PM ET (19:55 UTC) on weekdays — 5 min before US market close.
+    # Running before close ensures market orders fill same-day at market price
+    # rather than being queued for next open.
+    - cron: '55 19 * * 1-5'
+  workflow_dispatch:  # manual trigger from the Actions tab
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to commit state back to the repo
+
+    env:
+      EXECUTION_MODE: paper   # change to 'ib' when IB Gateway is reachable
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily trade
+        run: python scripts/run_daily.py
+
+      - name: Commit updated state and trade logs
+        run: |
+          git config user.name  "trading-bot[bot]"
+          git config user.email "trading-bot@noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "trade: $(date -u +'%Y-%m-%d')"
+          git push

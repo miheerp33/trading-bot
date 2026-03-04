@@ -1,0 +1,21 @@
+{
+  "name": "Trading Bot Dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "containerEnv": {
+  "PYTHONPATH": "/workspaces/trading_bot"
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-toolsai.jupyter",
+    "ms-azuretools.vscode-docker"
+  ],
+  "forwardPorts": [7497],  // If needed
+  "postCreateCommand": "pip install -r requirements.txt",
+  "remoteUser": "root"
+}
