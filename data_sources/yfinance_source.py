@@ -45,5 +45,5 @@ class YFinanceSource:
         hist = yf.download(symbol, period=period, auto_adjust=True, progress=False)
         if hist.empty:
             raise ValueError(f"yfinance returned no history for {symbol}")
-        closes = hist["Close"].dropna().tolist()
+        closes = hist["Close"].squeeze().dropna().tolist()
         return closes[-days:]
